@@ -1,10 +1,14 @@
-# Abaikan dependensi lokal, karena akan diinstal di dalam kontainer
+# Abaikan folder dependensi Node.js
 node_modules
 
-# Abaikan log dan file environment
+# Abaikan file log npm
 npm-debug.log
-.env
 
-# Abaikan konfigurasi Git dan Docker
+# Abaikan file konfigurasi lokal dan Docker
+.env
+Dockerfile
+docker-compose.yml
+
+# Abaikan folder Git
 .git
 .gitignore

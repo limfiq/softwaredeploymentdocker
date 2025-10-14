@@ -1,28 +1,21 @@
+# Tahap 1: Gunakan base image Node.js versi LTS (Long-Term Support) yang ringan
 FROM node:18-alpine
 
-# 1. Buat user non-root untuk keamanan
-# Argumen -D berarti "don't assign a password"
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Tahap 2: Tentukan direktori kerja di dalam container
+WORKDIR /usr/src/app
 
-# Tentukan working directory dan berikan kepemilikan ke user baru
-WORKDIR /app
-RUN chown appuser:appgroup /app
-
-# Copy file dependency
+# Tahap 3: Salin package.json dan package-lock.json untuk memanfaatkan caching layer Docker
 COPY package*.json ./
 
-# 2. Install hanya dependensi produksi dengan 'npm ci' untuk build yang lebih cepat dan andal
-RUN npm ci --only=production
+# Tahap 4: Install dependensi untuk production agar image lebih kecil dan aman
+RUN npm install --only=production
 
-# Copy source code setelah instalasi dependensi untuk caching yang lebih baik
+# Tahap 5: Salin sisa file aplikasi ke dalam direktori kerja
 COPY . .
-RUN chown -R appuser:appgroup /app
 
-# 3. Ganti ke user non-root
-USER appuser
-
-# Expose port aplikasi
+# Tahap 6: Expose port yang digunakan oleh aplikasi
 EXPOSE 3000
 
-# Jalankan aplikasi
-CMD ["npm", "start"]
+# Tahap 7: Perintah untuk menjalankan aplikasi saat container dimulai
+# Menggunakan 'node' langsung lebih baik untuk signal handling di Docker
+CMD [ "node", "server.js" ]

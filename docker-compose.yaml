@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Service untuk aplikasi Express.js
+  app:
+    build: .
+    container_name: mahasiswa-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      db-mysql:
+        condition: service_healthy
+    networks:
+      - mahasiswa-net
+    restart: unless-stopped
+
+  # Service untuk database MySQL
+  db-mysql:
+    image: mysql:8.0
+    container_name: mahasiswa-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: 
+      MYSQL_PASSWORD: 
+    ports:
+      - "3307:3306" # Mapping port 3307 di host ke 3306 di container
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - mahasiswa-net
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "", "-p"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  mahasiswa-net:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
