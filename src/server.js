@@ -1,49 +1,64 @@
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-const db = require('./db');
+// 1. Ganti `body-parser` yang sudah usang dengan middleware bawaan Express
+const pool = require('./db');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+// 2. Gunakan express.json()
+app.use(express.json());
 
-// fungsi buat data mahasiswa
-app.post('/mahasiswa', (req, res) => {
-  const { nama, nim, jurusan } = req.body;
-  const sql = 'INSERT INTO mahasiswa (nama, nim, jurusan) VALUES (?, ?, ?)';
-  db.query(sql, [nama, nim, jurusan], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.json({ message: 'Data berhasil ditambahkan', id: result.insertId });
-  });
+// 3. Ubah semua endpoint menjadi async dan gunakan try...catch untuk error handling
+
+// fungsi buat data mahasiswa (CREATE)
+app.post('/mahasiswa', async (req, res) => {
+  try {
+    const { nama, nim, jurusan } = req.body;
+    const sql = 'INSERT INTO mahasiswa (nama, nim, jurusan) VALUES (?, ?, ?)';
+    const [result] = await pool.query(sql, [nama, nim, jurusan]);
+    res.status(201).json({ message: 'Data berhasil ditambahkan', id: result.insertId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
 });
 
-// Fungsi read data mahasiswa
-app.get('/mahasiswa', (req, res) => {
-  db.query('SELECT * FROM mahasiswa', (err, results) => {
-    if (err) return res.status(500).send(err);
+// Fungsi read data mahasiswa (READ)
+app.get('/mahasiswa', async (req, res) => {
+  try {
+    const [results] = await pool.query('SELECT * FROM mahasiswa');
     res.json(results);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
 });
 
-// Fungsi update data mahasiswa
-app.put('/mahasiswa/:id', (req, res) => {
-  const { id } = req.params;
-  const { nama, nim, jurusan } = req.body;
-  const sql = 'UPDATE mahasiswa SET nama=?, nim=?, jurusan=? WHERE id=?';
-  db.query(sql, [nama, nim, jurusan, id], (err) => {
-    if (err) return res.status(500).send(err);
+// Fungsi update data mahasiswa (UPDATE)
+app.put('/mahasiswa/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nama, nim, jurusan } = req.body;
+    const sql = 'UPDATE mahasiswa SET nama=?, nim=?, jurusan=? WHERE id=?';
+    await pool.query(sql, [nama, nim, jurusan, id]);
     res.json({ message: 'Data berhasil diperbarui' });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
 });
 
-// Fungsi hapus data mahasiswa
-app.delete('/mahasiswa/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM mahasiswa WHERE id=?';
-  db.query(sql, [id], (err) => {
-    if (err) return res.status(500).send(err);
+// Fungsi hapus data mahasiswa (DELETE)
+app.delete('/mahasiswa/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = 'DELETE FROM mahasiswa WHERE id=?';
+    await pool.query(sql, [id]);
     res.json({ message: 'Data berhasil dihapus' });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
 });
 
 app.listen(3000, () => console.log('🚀 Server berjalan di port 3000'));

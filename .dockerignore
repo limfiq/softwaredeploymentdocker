@@ -1,0 +1,10 @@
+# Abaikan dependensi lokal, karena akan diinstal di dalam kontainer
+node_modules
+
+# Abaikan log dan file environment
+npm-debug.log
+.env
+
+# Abaikan konfigurasi Git dan Docker
+.git
+.gitignore

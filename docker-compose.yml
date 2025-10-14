@@ -3,26 +3,37 @@ services:
   api:
     build: .
     ports:
-      - "3000:3000"
+      - "3000:3000" # Pastikan port ini tidak bentrok dengan layanan lain di mesin Anda
     depends_on:
-      - db
+      db:
+        condition: service_healthy # Menunggu hingga DB benar-benar siap
     environment:
       - DB_HOST=db
-      - DB_USER=root
-      - DB_PASS=root
-      - DB_NAME=sim
+      - DB_USER=${DB_USER} # Mengambil nilai dari file .env
+      - DB_PASS=${DB_PASSWORD} # Mengambil nilai dari file .env
+      - DB_NAME=${DB_DATABASE} # Mengambil nilai dari file .env
     volumes:
-      - .:/app
+      - .:/app # Cocok untuk development, hapus untuk production
     restart: always
 
   db:
     image: mysql:8
     restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: root
+      # Gunakan password root yang kuat, disimpan di .env
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} # Bisa juga password root yang berbeda
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+      # File init.sql sekarang tidak terlalu dibutuhkan karena user dan db dibuat oleh environment variable di atas
+      # Namun, Anda tetap bisa menggunakannya untuk membuat tabel, dll.
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
