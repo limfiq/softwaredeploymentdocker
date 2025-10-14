@@ -7,10 +7,6 @@ services:
     container_name: mahasiswa-app
     ports:
       - "3000:3000"
-    volumes:
-      # Mount source code dari host ke container
-      # Ini memungkinkan nodemon untuk mendeteksi perubahan file
-      - .:/usr/src/app
     env_file:
       - .env
     depends_on:
