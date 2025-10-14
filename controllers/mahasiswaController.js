@@ -3,7 +3,7 @@ const { pool } = require('../db/connection');
 // GET all mahasiswa
 exports.getAllMahasiswa = async (req, res, next) => {
   try {
-    const [rows] = await pool.query('SELECT id, nim, nama, jurusan FROM mahasiswa ORDER BY created_at DESC');
+    const [rows] = await pool.query('SELECT id, nim, nama, jurusan FROM mahasiswa');
     res.status(200).json({
       message: 'Berhasil mengambil semua data mahasiswa',
       data: rows,
@@ -22,7 +22,7 @@ exports.getMahasiswaById = async (req, res, next) => {
       return res.status(404).json({ message: `Mahasiswa dengan ID ${id} tidak ditemukan` });
     }
     res.status(200).json({
-      message: `Berhasil mengambil data mahasiswa dengan ID `,
+      message: `Berhasil mengambil data mahasiswa dengan ID ${id}`,
       data: rows[0],
     });
   } catch (error) {
@@ -67,10 +67,10 @@ exports.updateMahasiswa = async (req, res, next) => {
       [nim, nama, jurusan, id]
     );
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: `Mahasiswa dengan ID  tidak ditemukan` });
+      return res.status(404).json({ message: `Mahasiswa dengan ID ${id} tidak ditemukan` });
     }
     res.status(200).json({
-      message: `Data mahasiswa dengan ID  berhasil diperbarui`,
+      message: `Data mahasiswa dengan ID ${id} berhasil diperbarui`,
       data: { id: Number(id), nim, nama, jurusan },
     });
   } catch (error) {
@@ -87,9 +87,9 @@ exports.deleteMahasiswa = async (req, res, next) => {
     const { id } = req.params;
     const [result] = await pool.query('DELETE FROM mahasiswa WHERE id = ?', [id]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: `Mahasiswa dengan ID  tidak ditemukan` });
+      return res.status(404).json({ message: `Mahasiswa dengan ID ${id} tidak ditemukan` });
     }
-    res.status(200).json({ message: `Data mahasiswa dengan ID  berhasil dihapus` });
+    res.status(200).json({ message: `Data mahasiswa dengan ID ${id} berhasil dihapus` });
   } catch (error) {
     next(error);
   }
