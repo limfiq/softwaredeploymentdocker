@@ -23,7 +23,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mahasiswa_db
-      MYSQL_USER: root
+      MYSQL_USER: ufiq
       MYSQL_PASSWORD: root
     ports:
       - "3307:3306" # Mapping port 3307 di host ke 3306 di container
