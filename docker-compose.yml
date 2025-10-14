@@ -1,29 +1,24 @@
 version: "3.8"
+
 services:
   api:
     build: .
+    container_name: softwaredeploymentdocker-api
     ports:
       - "3000:3000"
-    depends_on:
-      - db
     environment:
+      - NODE_ENV=production
       - DB_HOST=db
       - DB_USER=root
-      - DB_PASS=root
+      - DB_PASSWORD=root
       - DB_NAME=sim
-    volumes:
-      - .:/app
-    restart: always
-
+    depends_on:
+      - db
   db:
     image: mysql:8
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sim
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-volumes:
-  db_data:
+    ports:
+      - "3306:3306"
