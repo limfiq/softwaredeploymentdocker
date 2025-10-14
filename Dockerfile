@@ -1,19 +1,18 @@
-# Gunakan image Node.js versi ringan
-FROM node:18-slim
+FROM node:18-alpine
 
-# Buat working directory
+# Tentukan working directory
 WORKDIR /app
 
-# Salin file package
+# Copy file dependency
 COPY package*.json ./
 
 # Install dependency
 RUN npm install
 
-# Salin seluruh kode
+# Copy semua source code
 COPY . .
 
-# Ekspos port
+# Expose port aplikasi
 EXPOSE 3000
 
 # Jalankan aplikasi
