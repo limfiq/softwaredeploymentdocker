@@ -15,4 +15,5 @@ db.connect(err => {
   }
 });
 
-export default db;
+
+module.exports = db;
