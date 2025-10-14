@@ -22,9 +22,9 @@ services:
     container_name: mahasiswa-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: mahasiswa_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
     ports:
       - "3307:3306" # Mapping port 3307 di host ke 3306 di container
     volumes:
